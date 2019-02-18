@@ -1,3 +1,5 @@
+resolver <%= ENV['DNS_RESOLVER'] %>;
+
 server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
 
 location / {
