@@ -1,0 +1,9 @@
+server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
+
+location / {
+  proxy_pass https://pix-$app-integration-$pr.scalingo.io;
+}
+
+location /api/ {
+  proxy_pass https://pix-api-integration-$pr.scalingo.io;
+}
