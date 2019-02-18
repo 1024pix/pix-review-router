@@ -1,8 +1,8 @@
 server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
 
 location / {
-  proxy_pass https://scalingo.io;
-  proxy_set_header Host pix-$app-integration-$pr.scalingo.io;
+  proxy_pass https://scalingo.io/$app/$uri;
+  proxy_set_header Host pix-front-integration-$pr.scalingo.io;
 }
 
 location /api/ {
