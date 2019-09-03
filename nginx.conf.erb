@@ -5,11 +5,11 @@
 #
 #  * API routes are routed to the API application:
 #
-#    https://app-pr123.review.pix.fr/api/route   -> https://pix-api-integration-pr123.scalingo.io/api/route
+#    https://app-pr123.review.pix.fr/api/route   -> https://pix-api-review-pr123.scalingo.io/api/route
 #
 #  * When the requested app is "api", route to API application without modifying path:
 #
-#    https://api-pr123.review.pix.fr/metrics   -> https://pix-api-integration-pr123.scalingo.io/metrics
+#    https://api-pr123.review.pix.fr/metrics   -> https://pix-api-review-pr123.scalingo.io/metrics
 #
 
 # This regex matches host names like:
@@ -32,7 +32,7 @@ location ~ / {
   # If requested app is "api": route to API application and do not change path
   if ($app = api) {
     set $prefix "";
-    set $scalingo_app "pix-api-integration";
+    set $scalingo_app "pix-api-review";
   }
 
   # Defining a resolver is required for dynamic DNS resolution
