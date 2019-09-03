@@ -1,3 +1,17 @@
+# Expected behavior for this nginx configuration:
+#  * App routes are routed to front application with app name from requested host inserted into request path:
+#
+#    https://orga-pr123.review.pix.fr/some/path   -> https://pix-front-integration-pr123.scalingo.io/orga/some/path
+#
+#  * API routes are routed to the API application:
+#
+#    https://app-pr123.review.pix.fr/api/route   -> https://pix-api-integration-pr123.scalingo.io/api/route
+#
+#  * When the requested app is "api", route to API application without modifying path:
+#
+#    https://api-pr123.review.pix.fr/metrics   -> https://pix-api-integration-pr123.scalingo.io/metrics
+#
+
 # This regex matches host names like:
 #    orga-pr123.review.pix.fr
 # and sets variables:
@@ -5,12 +19,24 @@
 #    $pr = "pr123"
 server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
 
-location / {
-  proxy_pass https://scalingo.io/$app$uri;
-  proxy_set_header Host pix-front-integration-$pr.scalingo.io;
-}
+location ~ / {
+  # Consider requested $app to be "api" if the path starts with "/api/"
+  if ($uri ~ ^/api/) {
+    set $app "api";
+  }
 
-location /api/ {
-  proxy_pass https://scalingo.io;
-  proxy_set_header Host pix-api-integration-$pr.scalingo.io;
+  # Default to routing to front application with app as prefix
+  set $prefix "/$app";
+  set $scalingo_app "pix-front-integration";
+
+  # If requested app is "api": route to API application and do not change path
+  if ($app = api) {
+    set $prefix "";
+    set $scalingo_app "pix-api-integration";
+  }
+
+  # Defining a resolver is required for dynamic DNS resolution
+  resolver 8.8.8.8;
+
+  proxy_pass https://$scalingo_app-$pr.scalingo.io$prefix$uri;
 }
