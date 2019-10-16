@@ -38,5 +38,5 @@ location / {
   # Defining a resolver is required for dynamic DNS resolution
   resolver 8.8.8.8;
 
-  proxy_pass https://$scalingo_app-$pr.scalingo.io$prefix$uri$is_args$args;
+  proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
 }
