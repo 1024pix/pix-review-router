@@ -11,6 +11,9 @@
 #
 #    https://api-pr123.review.pix.fr/metrics   -> https://pix-api-review-pr123.scalingo.io/metrics
 #
+#  * When the requested app is "pix-site", route to pix site application:
+#
+#    https://site-pr123.review.pix.fr/some/path  -> https://pix-site-review-pr123.scalingo.io/some/path
 
 # This regex matches host names like:
 #    orga-pr123.review.pix.fr
@@ -33,6 +36,12 @@ location / {
   if ($app = api) {
     set $prefix "";
     set $scalingo_app "pix-api-review";
+  }
+
+  # If requested app is "site": route to pix site application and do not change path
+  if ($app = site) {
+    set $prefix "";
+    set $scalingo_app "pix-site-review";
   }
 
   # Defining a resolver is required for dynamic DNS resolution
