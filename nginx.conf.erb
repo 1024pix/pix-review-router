@@ -3,9 +3,13 @@
 #
 #    https://orga-pr123.review.pix.fr/some/path   -> https://pix-front-integration-pr123.scalingo.io/orga/some/path
 #
-#  * API routes are routed to the API application:
+#  * API routes whose app is neither "editor" nor "lcms" are routed to the API application:
 #
 #    https://app-pr123.review.pix.fr/api/route   -> https://pix-api-review-pr123.scalingo.io/api/route
+#
+#  * API routes whose app is either "editor" or "lcms" are routed to the lcms application:
+#
+#    https://lcms-pr123.review.pix.fr/api/route   -> https://pix-lcms-review-pr123.scalingo.io/api/route
 #
 #  * When the requested app is "api", route to API application without modifying path:
 #
@@ -19,7 +23,7 @@
 #
 #    https://editor.review.pix.fr/some/path  -> https://pix-lcms-review-pr123.scalingo.io/some/path
 #
-#  * When the requested app is "lcms", route to pix lcms site application:
+#  * When the requested app is "lcms", route to pix lcms application:
 #
 #    https://lcms.review.pix.fr/some/path  -> https://pix-lcms-review-pr123.scalingo.io/some/path
 
@@ -31,9 +35,18 @@
 server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
 
 location / {
-  # Consider requested $app to be "api" if the path starts with "/api/"
   if ($uri ~ ^/api/) {
-    set $app "api";
+    # Consider requested $app to be "api" if the path starts with "/api/"
+    # and original $app is neither "lcms" nor "editor"
+    if ($app !~ "(lcms|editor)") {
+      set $app "api";
+    }
+
+    # Consider requested $app to be "lcms" if the path starts with "/api/" 
+    # and original $app is either "lcms" or "editor"
+    if ($app ~ "(lcms|editor)") {
+      set $app "lcms";
+    }
   }
 
   # Default to routing to front application with app as prefix
