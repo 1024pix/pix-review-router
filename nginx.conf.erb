@@ -14,6 +14,14 @@
 #  * When the requested app is "pix-site", route to pix site application:
 #
 #    https://site-pr123.review.pix.fr/some/path  -> https://pix-site-review-pr123.scalingo.io/some/path
+#
+#  * When the requested app is "editor", route to pix lcms site application:
+#
+#    https://editor.review.pix.fr/some/path  -> https://pix-lcms-review-pr123.scalingo.io/some/path
+#
+#  * When the requested app is "lcms", route to pix lcms site application:
+#
+#    https://lcms.review.pix.fr/some/path  -> https://pix-lcms-review-pr123.scalingo.io/some/path
 
 # This regex matches host names like:
 #    orga-pr123.review.pix.fr
@@ -42,6 +50,12 @@ location / {
   if ($app = site) {
     set $prefix "";
     set $scalingo_app "pix-site-review";
+  }
+
+  # If requested app is "editor" or "lcms": route to pix lcms application and do not change path
+  if ($app ~ "(lcms|editor)") {
+    set $prefix "";
+    set $scalingo_app "pix-lcms-review";
   }
 
   # Defining a resolver is required for dynamic DNS resolution
