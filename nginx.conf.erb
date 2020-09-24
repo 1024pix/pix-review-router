@@ -44,6 +44,12 @@ location / {
     set $scalingo_app "pix-site-review";
   }
 
+  # If requested app is "pro": route to pix pro application and do not change path
+  if ($app = pro) {
+    set $prefix "";
+    set $scalingo_app "pix-pro-review"; 
+  }
+
   # Defining a resolver is required for dynamic DNS resolution
   resolver 8.8.8.8;
 
