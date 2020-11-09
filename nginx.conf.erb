@@ -21,6 +21,7 @@
 #    $app = "orga"
 #    $pr = "pr123"
 server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
+port_in_redirect off;
 
 location / {
   # Consider requested $app to be "api" if the path starts with "/api/"
