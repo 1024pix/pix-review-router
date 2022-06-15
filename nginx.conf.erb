@@ -56,6 +56,11 @@ location / {
     set $prefix "";
     set $scalingo_app "pix-ui-review"; 
   }
+  
+  if ($app = tutos) {
+    set $prefix "";
+    set $scalingo_app "pix-tutos-review"; 
+  }
 
   # Defining a resolver is required for dynamic DNS resolution
   resolver 8.8.8.8;
