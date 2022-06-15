@@ -57,6 +57,7 @@ location / {
     set $scalingo_app "pix-ui-review"; 
   }
   
+  # If requested app is tutos: route to pix tutos application and do not change path
   if ($app = tutos) {
     set $prefix "";
     set $scalingo_app "pix-tutos-review"; 
