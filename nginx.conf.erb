@@ -63,6 +63,18 @@ location / {
     set $scalingo_app "pix-tutos-review"; 
   }
 
+  # If requested app is epreuves: route to pix epreuves application and do not change path
+  if ($app = epreuves) {
+    set $prefix "";
+    set $scalingo_app "pix-epreuves-review"; 
+  }
+
+  # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
+  if ($app = epreuvesviewer) {
+    set $prefix "/viewer";
+    set $scalingo_app "pix-epreuves-review"; 
+  }
+
   # Defining a resolver is required for dynamic DNS resolution
   resolver 8.8.8.8;
 
