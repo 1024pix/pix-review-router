@@ -29,50 +29,32 @@ location / {
     set $app "api";
   }
 
-  # Default to routing to front application with app as prefix
-  set $prefix "/$app";
-  set $scalingo_app "pix-front-review";
+  # Default to routing to review application
+  set $prefix "";
+  set $scalingo_app pix-$app-review;
 
-  # If requested app is "api": route to API application and do not change path
-  if ($app = api) {
-    set $prefix "";
-    set $scalingo_app "pix-api-review";
+  # If requested app is one of the pix front: route to pix front review with $app as path prefix
+  if ($app = app ) {
+    set $prefix "/$app";
+    set $scalingo_app "pix-front-review";
   }
-
-  # If requested app is "site": route to pix site application and do not change path
-  if ($app = site) {
-    set $prefix "";
-    set $scalingo_app "pix-site-review";
+  if ($app = certif ) {
+    set $prefix "/$app";
+    set $scalingo_app "pix-front-review";
   }
-
-  # If requested app is "pro": route to pix pro application and do not change path
-  if ($app = pro) {
-    set $prefix "";
-    set $scalingo_app "pix-pro-review"; 
+  if ($app = orga ) {
+    set $prefix "/$app";
+    set $scalingo_app "pix-front-review";
   }
-
-  # If requested app is ui: route to pix ui application and do not change path
-  if ($app = ui) {
-    set $prefix "";
-    set $scalingo_app "pix-ui-review"; 
-  }
-  
-  # If requested app is tutos: route to pix tutos application and do not change path
-  if ($app = tutos) {
-    set $prefix "";
-    set $scalingo_app "pix-tutos-review"; 
-  }
-
-  # If requested app is epreuves: route to pix epreuves application and do not change path
-  if ($app = epreuves) {
-    set $prefix "";
-    set $scalingo_app "pix-epreuves-review"; 
+  if ($app = admin ) {
+    set $prefix "/$app";
+    set $scalingo_app "pix-front-review";
   }
 
   # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
   if ($app = epreuvesviewer) {
     set $prefix "/viewer";
-    set $scalingo_app "pix-epreuves-review"; 
+    set $scalingo_app "pix-epreuves-review";
   }
 
   # Defining a resolver is required for dynamic DNS resolution
@@ -83,6 +65,6 @@ location / {
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   proxy_set_header Pix-Application $app;
   proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
-
   proxy_redirect http://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>/ /;
 }
+
