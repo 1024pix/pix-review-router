@@ -20,51 +20,59 @@
 # and sets variables:
 #    $app = "orga"
 #    $pr = "pr123"
-server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
-port_in_redirect off;
-
-location / {
-  # Consider requested $app to be "api" if the path starts with "/api/"
-  if ($uri ~ ^/api/) {
-    set $app "api";
-  }
-
-  # Default to routing to review application
-  set $prefix "";
-  set $scalingo_app pix-$app-review;
-
-  # If requested app is one of the pix front: route to pix front review with $app as path prefix
-  if ($app = app ) {
-    set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
-  }
-  if ($app = certif ) {
-    set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
-  }
-  if ($app = orga ) {
-    set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
-  }
-  if ($app = admin ) {
-    set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
-  }
-
-  # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
-  if ($app = epreuvesviewer) {
-    set $prefix "/viewer";
-    set $scalingo_app "pix-epreuves-review";
-  }
-
-  # Defining a resolver is required for dynamic DNS resolution
-  resolver 8.8.8.8;
-
-  # Set X-Forwarded-xxx headers to let client be aware of original request parameters
-  proxy_set_header X-Forwarded-Host $http_host;
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header Pix-Application $app;
-  proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
-  proxy_redirect http://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>/ /;
+server {
+  server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
+  port_in_redirect off;
+  
+  location / {
+    # Consider requested $app to be "api" if the path starts with "/api/"
+    if ($uri ~ ^/api/) {
+      set $app "api";
+    }
+  
+    # Default to routing to review application
+    set $prefix "";
+    set $scalingo_app pix-$app-review;
+  
+    # If requested app is one of the pix front: route to pix front review with $app as path prefix
+    if ($app = app ) {
+      set $prefix "/$app";
+      set $scalingo_app "pix-front-review";
+    }
+    if ($app = certif ) {
+      set $prefix "/$app";
+      set $scalingo_app "pix-front-review";
+    }
+    if ($app = orga ) {
+      set $prefix "/$app";
+      set $scalingo_app "pix-front-review";
+    }
+    if ($app = admin ) {
+      set $prefix "/$app";
+      set $scalingo_app "pix-front-review";
+    }
+  
+    # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
+    if ($app = epreuvesviewer) {
+      set $prefix "/viewer";
+      set $scalingo_app "pix-epreuves-review";
+    }
+  
+    # Defining a resolver is required for dynamic DNS resolution
+    resolver 8.8.8.8;
+  
+    # Set X-Forwarded-xxx headers to let client be aware of original request parameters
+    proxy_set_header X-Forwarded-Host $http_host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Pix-Application $app;
+    proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
+    proxy_redirect http://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>/ /;
+  }  
 }
 
+server {
+  server_name airflow-login.review.pix.fr;
+  location / {
+    return 302 https://airflow-pr$arg_state.review.pix.fr/oauth-authorized/google$request_uri;
+  }
+}
