@@ -1,6 +1,17 @@
-# Local
+## Local
 
-## Démarrer nginx en mode debug
+On utilise le fichier `nginxbase.conf` en local car le buildpack Scalingo en inclut un
+https://github.com/Scalingo/nginx-buildpack/blob/master/config/nginx.conf.erb
+
+### Démarrer
+
+Exécuter
+``` shell
+erb nginx.conf.erb > nginx.conf
+docker run --volume $(pwd)/nginxbase.conf:/etc/nginx/nginx.conf:ro --volume $(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro --publish 80:80 nginx
+```
+
+### Démarrer mode debug
 
 Ajouter la directive de debug en haut du fichier `nginx.conf.erb`
 ```
