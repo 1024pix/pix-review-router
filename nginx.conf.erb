@@ -50,7 +50,10 @@ location / {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-
+  if ($app = pix1d ) {
+    set $prefix "/$app";
+    set $scalingo_app "pix-front-review";
+  }
   # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
   if ($app = epreuvesviewer) {
     set $prefix "/viewer";
