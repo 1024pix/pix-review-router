@@ -15,12 +15,18 @@
 #
 #    https://site-pr123.review.pix.fr/some/path  -> https://pix-site-review-pr123.scalingo.io/some/path
 
+#  * App routes are routed to front application with app name from requested host inserted into request path:
+#
+#    https://app-pr123.review.pix4.pix.digital/some/path   -> https://pix-4pix-front-review-pr123.osc-fr1.scalingo.io/app/some/path
+
+
 # This regex matches host names like:
 #    orga-pr123.review.pix.fr
 # and sets variables:
 #    $app = "orga"
 #    $pr = "pr123"
-server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
+#    $domain = "pix.fr" | "pix4.pix.digital"
+server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.review.){1}(?<domain>[^\/]+).+$;
 port_in_redirect off;
 
 location / {
