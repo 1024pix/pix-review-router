@@ -1,5 +1,11 @@
 # Local
 
+## Deploiement
+
+Alimenter les variables d'env:
+- API_HOST_SUFFIX :
+- FRONT_REVIEW_APP_NAME_PREFIX :
+
 ## Démarrer nginx en mode debug
 
 Ajouter la directive de debug en haut du fichier `nginx.conf.erb`
@@ -10,7 +16,7 @@ error_log /var/log/nginx/error.log debug;
 Démarrer nginx
 ``` shell
 erb nginx.conf.erb > nginx.conf
-docker run -v $(pwd)/nginxbase.conf:/etc/nginx/nginx.conf:ro -v $(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro -p 80:80 --entrypoint nginx-debug nginx '-g daemon off;' 2>&1 |egrep '^(Host: |X-Forwarded-Host: |.GET .* HTTP)'
+docker run -v $(pwd)/nginxbase.conf:/etc/nginx/nginx.conf:ro -v $(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro --env-file .env -p 80:80 --entrypoint nginx-debug nginx '-g daemon off;' 2>&1 |egrep '^(Host: |X-Forwarded-Host: |.GET .* HTTP)'
 ```
 
 Localiser une review-app active et récupérer le nom de l'application, ici `pix-bot-review-pr202`.

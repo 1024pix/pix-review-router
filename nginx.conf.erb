@@ -32,27 +32,28 @@ location / {
   # Default to routing to review application
   set $prefix "";
   set $scalingo_app pix-$app-review;
+  set $front_review_app_name_prefix <%= ENV['FRONT_REVIEW_APP_NAME_PREFIX'] %>;
 
   # If requested app is one of the pix front: route to pix front review with $app as path prefix
   if ($app = app ) {
     set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
+    set $scalingo_app $front_review_app_name_prefix;
   }
   if ($app = certif ) {
     set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
+    set $scalingo_app $front_review_app_name_prefix;
   }
   if ($app = orga ) {
     set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
+    set $scalingo_app $front_review_app_name_prefix;
   }
   if ($app = admin ) {
     set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
+    set $scalingo_app $front_review_app_name_prefix;
   }
   if ($app = 1d ) {
     set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
+    set $scalingo_app $front_review_app_name_prefix;
   }
   # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
   if ($app = epreuvesviewer) {
