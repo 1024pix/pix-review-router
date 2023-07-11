@@ -15,8 +15,21 @@ error_log /var/log/nginx/error.log debug;
 
 Démarrer nginx
 ``` shell
-erb nginx.conf.erb > nginx.conf
-docker run -v $(pwd)/nginxbase.conf:/etc/nginx/nginx.conf:ro -v $(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro --env-file .env -p 80:80 --entrypoint nginx-debug nginx '-g daemon off;' 2>&1 |egrep '^(Host: |X-Forwarded-Host: |.GET .* HTTP)'
+  erb nginx.conf.erb > nginx.conf
+  docker rm review-router
+  docker run \
+      -v $(pwd)/nginxbase.conf:/etc/nginx/nginx.conf:ro \
+      -v $(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro \
+      -p 80:80 \
+      --entrypoint nginx-debug \
+      --name="review-router" \
+      nginx '-g daemon off;' 2>&1 \
+       |egrep '^(Host: |X-Forwarded-Host: |.GET .* HTTP )'
+```
+
+Verifier les logs du container
+```
+  docker logs review-router
 ```
 
 Localiser une review-app active et récupérer le nom de l'application, ici `pix-bot-review-pr202`.
@@ -34,12 +47,12 @@ X-Forwarded-Host: bot-pr202.review.pix.fr
 Host: pix-bot-review-pr202.scalingo.io
 ```
 
-> Pour les fronts du monorepo, comme la review app est commune à tous les fronts, une configuration spécifique
+> Pour les fronts du monorepo, comme la r:eview app est commune à tous les fronts, une configuration spécifique
 > est mise en place
 
 Pour tester le proxy des fronts du monorepo exécuter ces appels
 ```shell
-curl -H "Host: app-pr202.review.pix.fr" localhost:80/urlapp
+curl -H "Host: app-pr6.review.pix.4pix.digital" localhost:80/connexion
 curl -H "Host: orga-pr202.review.pix.fr" localhost:80/urlorga
 ```
 

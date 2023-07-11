@@ -31,8 +31,9 @@ location / {
 
   # Default to routing to review application
   set $prefix "";
-  set $scalingo_app pix-$app-review;
-  set $front_review_app_name_prefix <%= ENV['FRONT_REVIEW_APP_NAME_PREFIX'] || 'pix-front-review' %>;
+  set $review_app_name_prefix <%= ENV['FRONT_REVIEW_APP_NAME_PREFIX'] || 'pix' %>;
+  set $scalingo_app $review_app_name_prefix-$app-review;
+  set $front_review_app_name_prefix $review_app_name_prefix-front-review;
 
   # If requested app is one of the pix front: route to pix front review with $app as path prefix
   if ($app = app ) {
