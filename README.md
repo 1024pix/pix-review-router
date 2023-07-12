@@ -1,10 +1,30 @@
 # Local
 
-## Deploiement
+## Configuration
 
-Alimenter les variables d'env:
-- API_HOST_SUFFIX :
-- FRONT_REVIEW_APP_NAME_PREFIX :
+La configuration se fait par les variables d'environnement suivantes.
+```dotenv
+# Suffix of the api host
+# obligatoire: oui
+# type: String
+# valeur par défaut: aucune
+# exemple: osc-fr1.scalingo.io
+API_HOST_SUFFIX=
+
+# Prefix name for the front review apps
+# obligatoire: non
+# type: String
+# valeur par défaut: pix
+# exemple: custom-domain
+FRONT_REVIEW_APP_NAME_PREFIX=
+
+# URL du buildpack nginx Scalingo
+# obligatoire: non
+# type: String
+# valeur par défaut: aucune
+# exemple: pix-4pix
+BUILDPACK_URL=https://github.com/Scalingo/nginx-buildpack
+```
 
 ## Démarrer nginx en mode debug
 
@@ -14,7 +34,9 @@ error_log /var/log/nginx/error.log debug;
 ```
 
 Démarrer nginx
-``` shell
+```shell
+  export FRONT_REVIEW_APP_NAME_PREFIX=pix
+  export API_HOST_SUFFIX=osc-fr1.scalingo.io
   erb nginx.conf.erb > nginx.conf
   docker rm review-router
   docker run \
@@ -26,8 +48,9 @@ Démarrer nginx
       nginx '-g daemon off;' 2>&1 \
        |egrep '^(Host: |X-Forwarded-Host: |.GET .* HTTP )'
 ```
+La console doit se mettre en attente.
 
-Verifier les logs du container
+Vérifier les logs du container (dans un autre terminal)
 ```
   docker logs review-router
 ```
@@ -35,7 +58,7 @@ Verifier les logs du container
 Localiser une review-app active et récupérer le nom de l'application, ici `pix-bot-review-pr202`.
 
 Exécuter cet appel
-``` shell
+```shell
 curl -H "Host: bot-pr202.review.pix.fr" localhost:80/url
 ```
 
@@ -47,16 +70,24 @@ X-Forwarded-Host: bot-pr202.review.pix.fr
 Host: pix-bot-review-pr202.scalingo.io
 ```
 
-> Pour les fronts du monorepo, comme la r:eview app est commune à tous les fronts, une configuration spécifique
+> Pour les fronts du monorepo, comme la review app est commune à tous les fronts, une configuration spécifique
 > est mise en place
 
-Pour tester le proxy des fronts du monorepo exécuter ces appels
+Pour tester le proxy des fronts du monorepo, exécuter ces appels.
+
+Si vous utilisez les variables par défaut
 ```shell
-curl -H "Host: app-pr6.review.pix.4pix.digital" localhost:80/connexion
-curl -H "Host: orga-pr202.review.pix.fr" localhost:80/urlorga
+curl -H "Host: app-pr202.review.pix.fr" localhost:80/connexion
+curl -H "Host: orga-pr202.review.pix.fr" localhost:80/campagnes/les-miennes
 ```
 
-Vérifier les logs: le proxy doit être effectué à chaque fois vers la review front
+En alimentant la variable d'env `FRONT_REVIEW_APP_NAME_PREFIX=custom`
+```shell
+curl -H "Host: app-pr202.review.pix.custom.domain" localhost:80/connexion
+curl -H "Host: orga-pr202.review.pix.custom.domain" localhost:80/campagnes/les-miennes
+```
+
+Vérifier les logs : le proxy doit être effectué à chaque fois vers la review front
 `https://pix-front-review-pr202.scalingo.io` avec un path préfixée par le nom de l'application.
 
 ```shell
