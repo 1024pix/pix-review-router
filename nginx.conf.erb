@@ -59,7 +59,10 @@ location / {
     set $prefix "/viewer";
     set $scalingo_app "pix-epreuves-review";
   }
-
+  # If app-sso.review.pix.fr route to app.<%= ENV['SSO_REVIEW_APP'] %>.review.pix.fr
+  if ($pr = sso) {
+    set $pr "<%= ENV['SSO_REVIEW_APP'] %>";
+  }
   # Defining a resolver is required for dynamic DNS resolution
   resolver 8.8.8.8;
 
