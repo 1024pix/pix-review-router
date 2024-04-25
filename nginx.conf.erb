@@ -54,11 +54,6 @@ location / {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-  # If epreuves-viewer.review.pix.fr route to pix-epreuves-viewer-review
-  if ("${app}-${pr}" = epreuves-viewer) {
-    set $scalingo_app "pix-epreuves-viewer";
-    set $pr "review";
-  }
   # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
   if ($app = epreuvesviewer) {
     set $prefix "/viewer";
