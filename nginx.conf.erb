@@ -55,7 +55,7 @@ location / {
     set $scalingo_app "pix-front-review";
   }
   # If epreuves-viewer.review.pix.fr route to pix-epreuves-viewer-review
-  if ($app-$pr = epreuves-viewer) {
+  if ("${app}-${pr}" = epreuves-viewer) {
     set $scalingo_app "pix-epreuves-viewer";
     set $pr "review";
   }
