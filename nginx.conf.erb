@@ -34,27 +34,32 @@ location / {
   set $scalingo_app pix-$app-review;
 
   # If requested app is one of the pix front: route to pix front review with $app as path prefix
-  if ($app = app ) {
+  if ($app = app) {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-  if ($app = certif ) {
+  if ($app = certif) {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-  if ($app = orga ) {
+  if ($app = orga) {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-  if ($app = admin ) {
+  if ($app = admin) {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-  if ($app = 1d ) {
+  if ($app = 1d) {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-  # If epreuves-viewer.review.pix.fr route to pix-epreuves-viewer-review
+  if ($app = junior) {
+    # former application 1d is now called junior but it is still built in 1d folder
+    set $prefix "/1d";
+    set $scalingo_app "pix-front-review";
+  }
+   # If epreuves-viewer.review.pix.fr route to pix-epreuves-viewer-review
   set $app-pr "$app-$pr";
   if ($app-pr = epreuves-viewer) {
     set $scalingo_app "pix-epreuves-viewer";
