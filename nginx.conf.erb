@@ -50,13 +50,8 @@ location / {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-  if ($app = 1d) {
-    set $prefix "/$app";
-    set $scalingo_app "pix-front-review";
-  }
   if ($app = junior) {
-    # former application 1d is now called junior but it is still built in 1d folder
-    set $prefix "/1d";
+    set $prefix "$junior";
     set $scalingo_app "pix-front-review";
   }
    # If epreuves-viewer.review.pix.fr route to pix-epreuves-viewer-review
