@@ -51,7 +51,7 @@ location / {
     set $scalingo_app "pix-front-review";
   }
   if ($app = junior) {
-    set $prefix "$junior";
+    set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
    # If epreuves-viewer.review.pix.fr route to pix-epreuves-viewer-review
