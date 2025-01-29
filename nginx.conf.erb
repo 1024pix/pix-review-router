@@ -72,6 +72,8 @@ location / {
   # Defining a resolver is required for dynamic DNS resolution
   resolver 8.8.8.8;
 
+  add_header X-Robots-Tag noindex always;
+
   # Set X-Forwarded-xxx headers to let client be aware of original request parameters
   proxy_set_header X-Forwarded-Host $http_host;
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
