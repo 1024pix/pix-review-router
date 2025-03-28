@@ -54,16 +54,14 @@ location / {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
-   # If epreuves-viewer.review.pix.fr route to pix-epreuves-viewer-review
+   # If epreuves-viewer.review.pix.fr redirect to epreuves-viewer.pix.digital
   set $app-pr "$app-$pr";
   if ($app-pr = epreuves-viewer) {
-    set $scalingo_app "pix-epreuves-viewer";
-    set $pr "review";
+    return 301 https://epreuves-viewer.pix.digital$uri;
   }
-  # If requested app is epreuvesviewer: route to pix epreuves application with viewer path
+  # If epreuvesviewer-prxxx.review.pix.fr redirect to epreuves-viewer.pix.digital
   if ($app = epreuvesviewer) {
-    set $prefix "/viewer";
-    set $scalingo_app "pix-epreuves-review";
+    return 301 https://epreuves-viewer.pix.digital/$pr$uri;
   }
   # If app-sso.review.pix.fr route to app.<%= ENV['SSO_REVIEW_APP'] %>.review.pix.fr
   if ($pr = sso) {
@@ -81,4 +79,3 @@ location / {
   proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
   proxy_redirect http://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>/ /;
 }
-
