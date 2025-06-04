@@ -78,8 +78,5 @@ location / {
   proxy_set_header Pix-Application $app;
   proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
   proxy_redirect http://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>/ /;
-
-  if ($app = api) {
-    proxy_buffering off;
-  }
+  proxy_buffering off;
 }
