@@ -23,6 +23,8 @@
 server_name ~^(?<app>[^-]+)-(?<pr>[^.]+)(.+)$;
 port_in_redirect off;
 
+access_log off;
+
 location / {
   # Consider requested $app to be "api" if the path starts with "/api/"
   if ($uri ~ ^/api/) {
