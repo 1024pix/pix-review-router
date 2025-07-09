@@ -56,6 +56,10 @@ location / {
     set $prefix "/$app";
     set $scalingo_app "pix-front-review";
   }
+  if ($app = auth) {
+    set $prefix "/$app";
+    set $scalingo_app "pix-front-review";
+  }
    # If epreuves-viewer.review.pix.fr redirect to epreuves-viewer.pix.digital
   set $app-pr "$app-$pr";
   if ($app-pr = epreuves-viewer) {
