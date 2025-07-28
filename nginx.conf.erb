@@ -25,6 +25,8 @@ port_in_redirect off;
 
 access_log off;
 
+error_page 404 = @hera-fallback;
+
 location / {
   # Consider requested $app to be "api" if the path starts with "/api/"
   if ($uri ~ ^/api/) {
@@ -79,10 +81,46 @@ location / {
   add_header X-Robots-Tag noindex always;
 
   # Set X-Forwarded-xxx headers to let client be aware of original request parameters
+  proxy_intercept_errors on;
   proxy_set_header X-Forwarded-Host $http_host;
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   proxy_set_header Pix-Application $app;
   proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
   proxy_redirect http://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>/ /;
   proxy_buffering off;
+}
+
+location @hera-fallback {
+ 
+  # Default to routing to review application
+  set $prefix "";
+  set $scalingo_app pix-$app-review;
+
+  # If epreuves-viewer.review.pix.fr redirect to epreuves-viewer.pix.digital
+  set $app-pr "$app-$pr";
+  if ($app-pr = epreuves-viewer) {
+    return 301 https://epreuves-viewer.pix.digital$uri;
+  }
+  # If epreuvesviewer-prxxx.review.pix.fr redirect to epreuves-viewer.pix.digital
+  if ($app = epreuvesviewer) {
+    return 301 https://epreuves-viewer.pix.digital/$pr$uri;
+  }
+  # If app-sso.review.pix.fr route to app.<%= ENV['SSO_REVIEW_APP'] %>.review.pix.fr
+  if ($pr = sso) {
+    set $pr "<%= ENV['SSO_REVIEW_APP'] %>";
+  }
+
+  # Defining a resolver is required for dynamic DNS resolution
+  resolver 8.8.8.8;
+
+  add_header X-Robots-Tag noindex always;
+
+  # Set X-Forwarded-xxx headers to let client be aware of original request parameters
+  proxy_set_header X-Forwarded-Host $http_host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Pix-Application $app;
+  proxy_pass https://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>$prefix$uri$is_args$args;
+  proxy_redirect http://$scalingo_app-$pr.<%= ENV['API_HOST_SUFFIX'] || 'scalingo.io' %>/ /;
+  proxy_buffering off;
+
 }
