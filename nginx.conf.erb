@@ -25,7 +25,7 @@ port_in_redirect off;
 
 access_log off;
 
-error_page 404 = @hera-fallback;
+error_page 404 503 = @hera-fallback;
 
 location / {
   # Consider requested $app to be "api" if the path starts with "/api/"
