@@ -96,15 +96,6 @@ location @hera-fallback {
   set $prefix "";
   set $scalingo_app pix-$app-review;
 
-  # If epreuves-viewer.review.pix.fr redirect to epreuves-viewer.pix.digital
-  set $app-pr "$app-$pr";
-  if ($app-pr = epreuves-viewer) {
-    return 301 https://epreuves-viewer.pix.digital$uri;
-  }
-  # If epreuvesviewer-prxxx.review.pix.fr redirect to epreuves-viewer.pix.digital
-  if ($app = epreuvesviewer) {
-    return 301 https://epreuves-viewer.pix.digital/$pr$uri;
-  }
   # If app-sso.review.pix.fr route to app.<%= ENV['SSO_REVIEW_APP'] %>.review.pix.fr
   if ($pr = sso) {
     set $pr "<%= ENV['SSO_REVIEW_APP'] %>";
