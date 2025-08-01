@@ -2,49 +2,34 @@
 
 ## Démarrer nginx en mode debug
 
-Ajouter la directive de debug en haut du fichier `nginx.conf.erb`
-```
-error_log /var/log/nginx/error.log debug;
-```
-
-Démarrer nginx
+Créer la conf nginx avec une directive de debug
 ``` shell
-erb nginx.conf.erb > nginx.conf
-docker run -v $(pwd)/nginxbase.conf:/etc/nginx/nginx.conf:ro -v $(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro -p 80:80 --entrypoint nginx-debug nginx '-g daemon off;' 2>&1 |egrep '^(Host: |X-Forwarded-Host: |.GET .* HTTP)'
+echo "error_log /var/log/nginx/error.log debug;" > nginx.conf
+erb nginx.conf.erb >> nginx.conf
+```
+Démarrer le server nginx
+```shell
+docker compose up
 ```
 
-Localiser une review-app active et récupérer le nom de l'application, ici `pix-bot-review-pr202`.
+Localiser une review-app active et récupérer le nom de l'application, ici `pix-orga-review-pr13072`.
 
 Exécuter cet appel
 ``` shell
-curl -H "Host: bot-pr202.review.pix.fr" localhost:80/url
+curl -H "Host: orga-pr13072.review.pix.fr" localhost:80/url &>/dev/null
 ```
 
-Vérifier les logs: le proxy doit être effectué vers `https://pix-bot-review-pr202.scalingo.io`.
+Vérifier les logs: le proxy doit être effectué vers `https://pix-orga-review-pr13072.scalingo.io`.
 
 ```shell
+docker logs pix-review-router 2>&1 | egrep '^(Host: |X-Forwarded-Host: |.* HTTP)'
+```
+Dans cet exemple, le résultat est:
+```
+2025/07/31 11:32:48 [debug] 11#11: *7 http request line: "GET /url HTTP/1.1"
 "GET /url HTTP/1.0
-X-Forwarded-Host: bot-pr202.review.pix.fr
-Host: pix-bot-review-pr202.scalingo.io
+X-Forwarded-Host: orga-pr13072.review.pix.fr
+Host: pix-orga-review-pr13072.osc-fr1.scalingo.io
+2025/07/31 11:32:48 [debug] 11#11: *7 HTTP/1.1 200 OK
 ```
 
-> Pour les fronts du monorepo, comme la review app est commune à tous les fronts, une configuration spécifique
-> est mise en place
-
-Pour tester le proxy des fronts du monorepo exécuter ces appels
-```shell
-curl -H "Host: app-pr202.review.pix.fr" localhost:80/urlapp
-curl -H "Host: orga-pr202.review.pix.fr" localhost:80/urlorga
-```
-
-Vérifier les logs: le proxy doit être effectué à chaque fois vers la review front
-`https://pix-front-review-pr202.scalingo.io` avec un path préfixée par le nom de l'application.
-
-```shell
-"GET /app/urlapp HTTP/1.0
-X-Forwarded-Host: app-pr202.review.pix.fr
-Host: pix-front-review-pr202.scalingo.io
-"GET /orga/urlorga HTTP/1.0
-X-Forwarded-Host: orga-pr202.review.pix.fr
-Host: pix-front-review-pr202.scalingo.io
-```
